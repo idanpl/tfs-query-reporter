@@ -1,2 +1,2 @@
 # tfs-query-reporter
-Nothing much
+Idea of this tool is to send daily mails of TFS queries results.
