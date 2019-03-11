@@ -7,3 +7,15 @@
 /TfsUtils/obj
 /Program/obj
 /.vs
+/MailReporter/bin/Debug
+/MailReporter/obj/Debug
+/MailReporter2/bin/Debug
+/MailReporter2/obj/Debug
+/MailReporter2
+/TfsQueryReporter/bin/Debug
+/TfsQueryReporter/obj/Debug
+/TfsQueryReporter2/bin/Debug/netcoreapp2.0
+/TfsQueryReporter2
+/TfsUtils/bin/Debug
+*.user
+/Program/bin/Debug/netcoreapp2.1
