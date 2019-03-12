@@ -13,8 +13,8 @@ namespace TfsQueryReporter
         {
             Console.WriteLine("Starting...");
             TfsUtils tfsUtil = new TfsUtils(ApplicationSettings.BaseUrl, ApplicationSettings.ProjectGuid);
-            DataTable queryResult = tfsUtil.Query("Oh Query my query",  new Guid("01234567-d96b-4f03-9ceb-1b49de27ef41"), ApplicationSettings.ImportantFields);
-            Console.WriteLine($"Query returned with {queryResult.Rows.Count} records");
+            DataTable queryResult = tfsUtil.Query(ApplicationSettings.QueryTitle, ApplicationSettings.QueryGuid, ApplicationSettings.ImportantFields);
+            Console.WriteLine("Query returned with " + queryResult.Rows.Count + " records");
             MailSender sender = new MailSender();
             MailAddress mailFrom = new MailAddress(ApplicationSettings.MailFrom);
             List<MailAddress> recipients = new List<MailAddress>();
@@ -22,7 +22,7 @@ namespace TfsQueryReporter
             {
                 recipients.Add(new MailAddress(recipient));
             }
-            sender.SendMail(mailFrom, recipients,  "Daily mail", ApplicationSettings.SmtpHost, queryResult);
+            sender.SendMail(mailFrom, recipients, ApplicationSettings.SmtpHost, "Daily mail" , queryResult);
 
         }
     }

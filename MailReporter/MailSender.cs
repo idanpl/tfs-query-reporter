@@ -46,7 +46,7 @@ namespace TfsQueryReporter.Mail
             }
             catch (System.Exception ex)
             {
-                Console.WriteLine($"Could not send mail. Exception was {ex.Message}. Inner Exception is {ex.InnerException.Message}");
+                Console.WriteLine("Could not send mail. Exception was " + ex.Message +". Inner Exception is " + ex.InnerException.Message);
                 return;
             }
 
@@ -60,22 +60,11 @@ namespace TfsQueryReporter.Mail
             StringBuilder builder = new StringBuilder();
             builder.Append("<html>");
             builder.Append("<head>");
-            builder.Append(@"<style>table {
-                font - family: arial, sans - serif;
-                border - collapse: collapse;
-                width: 100 %;
-            }
-
-            td, th {
-            border: 1px solid #dddddd;
-            text - align: left;
-            padding: 8px;
-            }
-
-            tr: nth - child(even) {
-                background - color: #dddddd;
-            }
-            </ style > ");
+            builder.Append(@"<style>");
+            builder.Append("table {font-family: arial, sans-serif;border-collapse: collapse;width: 100 %;}");
+            builder.Append("td, th {border: 1px solid #dddddd;text-align: left;padding: 8px;}");
+            builder.Append("tr:nth-child(even) {background-color: #dddddd;}");
+            builder.Append("</style>");
             builder.Append("</head>");
             builder.Append("<body>");
             builder.Append("<h2>").Append(dataTable.TableName).Append("</h2>");
@@ -106,7 +95,8 @@ namespace TfsQueryReporter.Mail
             builder.Append("</table>");
             builder.Append("</body>");
             builder.Append("</html>");
-
+            builder = builder.Replace('\n', ' ');
+            builder = builder.Replace('\t', ' ');
             return builder.ToString();
         }
     }

@@ -19,3 +19,6 @@
 /TfsUtils/bin/Debug
 *.user
 /Program/bin/Debug/netcoreapp2.1
+/output/TfsQueryReporter.vshost.exe.manifest
+/output/TfsQueryReporter.vshost.exe.config
+/output/TfsQueryReporter.vshost.exe
