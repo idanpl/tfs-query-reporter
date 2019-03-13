@@ -16,7 +16,7 @@ namespace TfsQueryReporter.Tfs
     public class TfsUtils
     {
         public string BaseUrl { get; private set; }
-        public Guid ProjectGuid { get; private set;}
+        public Guid ProjectGuid { get; private set; }
 
         /// <summary>
         /// c'tor
@@ -34,18 +34,25 @@ namespace TfsQueryReporter.Tfs
         /// </summary>
         /// <param name="queryTitle">the title of the query</param>
         /// <param name="queryGuid">the query's guid </param>
-        /// <param name="importantFields">Fields to be returned</param>
         /// <returns>DataTable with the returned information</returns>
-        public DataTable Query(string queryTitle, Guid queryGuid, List<string> importantFields)
+        public DataTable Query(Guid queryGuid, string queryTitle = null)
         {
             DataTable dataTable = new DataTable();
-            List<IDictionary<string, object>> queryResult = new List<IDictionary<string, object>>();
+            WorkItemQueryResult workItemQueryResult;
+            List<WorkItem> workItems;
 
             Uri uri = new Uri(BaseUrl);
-            using (WorkItemTrackingHttpClient workItemTrackingHttpClient = new WorkItemTrackingHttpClient(uri, new VssCredentials()))
+            using (WorkItemTrackingHttpClient workItemTrackingHttpClient =
+                new WorkItemTrackingHttpClient(uri, new VssCredentials()))
             {
+                if (queryTitle == null)
+                {
+                    var queryWorkItem = workItemTrackingHttpClient.GetQueryAsync(ProjectGuid, queryGuid.ToString()).Result;
+                    queryTitle = queryWorkItem.Name;
+                }
+
                 // get a list of referenced work items
-                WorkItemQueryResult workItemQueryResult = workItemTrackingHttpClient.QueryByIdAsync(ProjectGuid, queryGuid).Result;
+                workItemQueryResult = workItemTrackingHttpClient.QueryByIdAsync(ProjectGuid, queryGuid).Result;
 
                 if (!workItemQueryResult.WorkItems.Any())
                 {
@@ -57,36 +64,31 @@ namespace TfsQueryReporter.Tfs
                 List<int> workItemsIds = workItemQueryResult.WorkItems.Select(item => item.Id).ToList();
 
                 // now get the actual work items
-                List<WorkItem> workItems = workItemTrackingHttpClient.GetWorkItemsAsync(ProjectGuid, workItemsIds).Result;
-
-                // just a temp data structure.
-                
-                foreach (WorkItem workItem in workItems)
-                {
-                    if (workItem.Id == null)
-                    {
-                        continue;
-                    }
-
-                    queryResult.Add(workItem.Fields);
-                }
+                workItems = workItemTrackingHttpClient.GetWorkItemsAsync(ProjectGuid, workItemsIds).Result;
             }
 
+            IEnumerable<WorkItemFieldReference> importantColumns = workItemQueryResult.Columns;
+
             // prepare the datatable
-            dataTable.Columns.AddRange( importantFields.Select(field => new DataColumn(field)).ToArray());
-            foreach (IDictionary<string, object> queryRecord in queryResult)
+            dataTable.Columns.AddRange(importantColumns.Select(field => new DataColumn(field.Name)).ToArray());
+            foreach (WorkItem workItem in workItems)
             {
                 DataRow row = dataTable.NewRow();
-                foreach (DataColumn column in dataTable.Columns)
+                foreach (var importantColumn in importantColumns)
                 {
-                    if (queryRecord.ContainsKey(column.ColumnName))
+                    if (workItem.Fields.ContainsKey(importantColumn.ReferenceName))
                     {
-                        row[column.ColumnName] = queryRecord[column.ColumnName];
+                        row[importantColumn.Name] = workItem.Fields[importantColumn.ReferenceName];
+                    }
+
+                    if (importantColumn.Name == "ID" && workItem.Id != null)
+                    {
+                        row["ID"] = workItem.Id;
                     }
                 }
-                                
+
                 dataTable.Rows.Add(row);
-            }        
+            }
 
             return dataTable;
         }

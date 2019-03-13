@@ -97,6 +97,7 @@ namespace TfsQueryReporter.Mail
             builder.Append("</html>");
             builder = builder.Replace('\n', ' ');
             builder = builder.Replace('\t', ' ');
+            builder = builder.Replace(@"\\", @"\");
             return builder.ToString();
         }
     }

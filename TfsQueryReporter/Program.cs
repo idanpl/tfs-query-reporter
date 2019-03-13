@@ -13,7 +13,7 @@ namespace TfsQueryReporter
         {
             Console.WriteLine("Starting...");
             TfsUtils tfsUtil = new TfsUtils(ApplicationSettings.BaseUrl, ApplicationSettings.ProjectGuid);
-            DataTable queryResult = tfsUtil.Query(ApplicationSettings.QueryTitle, ApplicationSettings.QueryGuid, ApplicationSettings.ImportantFields);
+            DataTable queryResult = tfsUtil.Query(ApplicationSettings.QueryGuid);
             Console.WriteLine("Query returned with " + queryResult.Rows.Count + " records");
             MailSender sender = new MailSender();
             MailAddress mailFrom = new MailAddress(ApplicationSettings.MailFrom);
