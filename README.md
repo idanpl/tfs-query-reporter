@@ -1,5 +1,5 @@
 # tfs-query-reporter
-Idea of this tool is to send daily mails of TFS queries results.
+Send daily mails for TFS queries
 
 # how can I use it?
-Check out the TfsQueryReporter.exe.config file. You will need to add your settings there. Then just run the TfsQueryReporter.exe file.
+set the TfsQueryReporter.exe.config settings (you need the TFS url, project guid, query guid, and a bunch of email settings), and you're ready to go.
